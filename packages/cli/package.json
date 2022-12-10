@@ -60,6 +60,9 @@
     "prisma": "build/index.js",
     "prisma2": "build/index.js"
   },
+  "__bundleDependencies": [
+    "@prisma/engines"
+  ],
   "devDependencies": {
     "@prisma/client": "workspace:*",
     "@prisma/debug": "workspace:*",

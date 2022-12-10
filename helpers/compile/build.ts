@@ -114,7 +114,7 @@ async function executeEsBuild(options: BuildOptions) {
  */
 async function dependencyCheck(options: BuildOptions) {
   // we only check our dependencies for a full build
-  if (process.env.DEV === 'true') return undefined
+  if (process.env.DEV === 'true' || process.env.ECOSYSTEM === 'true') return undefined
   // Only run on test and publish pipelines on Buildkite
   // Meaning we skip on GitHub Actions
   // Because it's slow and runs for each job, during setup, making each job slower
@@ -123,7 +123,7 @@ async function dependencyCheck(options: BuildOptions) {
   // we need to bundle everything to do the analysis
   const buildPromise = esbuild.build({
     entryPoints: glob.sync('**/*.{j,t}s', {
-      ignore: ['./src/__tests__/**/*'],
+      ignore: ['./src/__tests__/**/*', './tests/ecosystem/**/*'],
       gitignore: true,
     }),
     logLevel: 'silent', // there will be errors

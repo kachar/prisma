@@ -78,6 +78,13 @@ export const tscPlugin: (emitTypes?: boolean) => esbuild.Plugin = (emitTypes?: b
         await run(`tsc --project ${options.tsconfig} --paths null`)
       }
 
+      // for ecosystem tests, skip the bundling, just copy the types to go faster
+      if (process.env.ECOSYSTEM === 'true') {
+        await run(`cp -r ${process.cwd()}/declaration/runtime/* ${process.cwd()}/runtime`)
+        await run(`cp -r ${process.cwd()}/runtime/index.d.ts ${process.cwd()}/runtime/index-browser.d.ts`)
+        return
+      }
+
       // we bundle types if we also bundle the entry point and it is a ts file
       if (options.bundle === true && options.entryPoints?.[0].endsWith('.ts')) {
         const tsconfig = require(`${process.cwd()}/${options.tsconfig}`) // tsconfig
@@ -95,6 +102,7 @@ export const tscPlugin: (emitTypes?: boolean) => esbuild.Plugin = (emitTypes?: b
           // we link the types locally by re-exporting them from the entry point
           await fs.outputFile(`${bundlePath}.d.ts`, `export * from '${process.cwd()}/${entryPoint}'`)
         }
+        return
       }
     })
   },
